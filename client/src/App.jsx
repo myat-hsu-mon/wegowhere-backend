@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./App.css";
 
 import { ConnectionManager } from "./components/ConnectionManager";
 import { ConnectionState } from "./components/ConnectionState";
@@ -26,17 +27,23 @@ export default function App() {
       setFooEvents((previous) => [...previous, value]);
     }
 
+    function onMessageEvent(value) {
+      setMessages((prev) => [...prev, value]);
+    }
+
+    //listen socket connection
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
+
+    //listen events from the backend
     socket.on("foo", onFooEvent);
-    socket.on("message", (message) =>
-      setMessages((prev) => [...prev, message])
-    );
+    socket.on("message", onMessageEvent);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("foo", onFooEvent);
+      socket.off("message", onMessageEvent);
     };
   }, []);
 
